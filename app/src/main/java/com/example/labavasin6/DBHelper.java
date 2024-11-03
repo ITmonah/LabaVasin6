@@ -11,47 +11,53 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class DBHelper extends SQLiteOpenHelper {
-    private static String DB_name="animal.db";
+
+    private static String DB_NAME = "product.db";
     private static String DB_LOCATION;
-    private static final int DB_version=1;
+    private static final int DB_VERSION =6;
 
     private Context myContext;
 
-    public DBHelper(Context context){
-        super(context,DB_name,null,DB_version);
+    public DBHelper (Context context){
+        super(context, DB_NAME, null, DB_VERSION);
         this.myContext = context;
-        DB_LOCATION=context.getApplicationInfo().dataDir+"/databases/";
+        DB_LOCATION = context.getApplicationInfo().dataDir+"/databases/";
+
         copyDB();
     }
-    private boolean checkDB(){
-        File fileDB = new File(DB_LOCATION + DB_name);
+
+    private boolean checkDB() {
+        File fileDB = new File(DB_LOCATION + DB_NAME);
         return fileDB.exists();
     }
 
     private void copyDB(){
-        if(!checkDB()){
+        if (!checkDB()){
+            this.getReadableDatabase();
             try {
                 copyDBFile();
-            } catch (IOException e){
+            }
+            catch (IOException e){
                 throw new RuntimeException(e);
             }
         }
     }
-    private void copyDBFile() throws IOException {
-        InputStream inputStream= myContext.getAssets().open(DB_name);
-        OutputStream outputStream = new FileOutputStream(DB_LOCATION + DB_name);
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer,0,length);
+
+    private void copyDBFile() throws IOException{
+        InputStream inputStream =myContext.getAssets().open(DB_NAME);
+        OutputStream outputStream = new FileOutputStream(DB_LOCATION+DB_NAME);
+        byte[] buffer =new byte[1024];
+        int lenght;
+        while ((lenght=inputStream.read(buffer)) > 0){
+            outputStream.write(buffer,0,lenght);
         }
         outputStream.flush();
         outputStream.close();
         inputStream.close();
     }
+
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
     }
 
     @Override

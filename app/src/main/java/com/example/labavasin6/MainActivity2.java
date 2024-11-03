@@ -4,9 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.SimpleAdapter;
 
 import androidx.activity.EdgeToEdge;
@@ -14,19 +12,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.RecyclerView;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity2 extends AppCompatActivity {
     private DBHelper dbHelper;
     private SQLiteDatabase database;
     private ListView listView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,14 +40,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         listView=findViewById(R.id.ListView);
-
-        ArrayList<HashMap<String,String>>categories =new ArrayList<>();
+        Intent mIntent = getIntent();
+        int intValue = mIntent.getIntExtra("position", 0) + 1;
+        ArrayList<HashMap<String,String>> categories =new ArrayList<>();
         HashMap <String,String> category;
-        Cursor cursor = database.rawQuery("SELECT categories.id, categories.name AS \"Категория\" FROM categories", null);
+        Cursor cursor = database.rawQuery("SELECT name, info,price FROM products WHERE products.category_id =" + intValue, null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()){
             category=new HashMap<>();
-            category.put("name", cursor.getString(1));
+            category.put("name", cursor.getString(0));
+            category.put("info", "Описание: " + cursor.getString(1) + "\nЦена: " + cursor.getString(2));
             categories.add(category);
             cursor.moveToNext();
         }
@@ -62,18 +58,8 @@ public class MainActivity extends AppCompatActivity {
         SimpleAdapter adapter = new SimpleAdapter(
                 getApplicationContext(),
                 categories, android.R.layout.simple_list_item_2,
-                new String[]{"name"},
-                new int[]{android.R.id.text1}
+                new String[]{"name","info"},
+                new int[]{android.R.id.text1, android.R.id.text2}
         );
         listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent=new Intent(getApplicationContext(), MainActivity2.class);
-                intent.putExtra("position",position);
-                startActivity(intent);
-            }
-        });
-    }
-}
+}}
